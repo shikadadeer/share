@@ -3,8 +3,8 @@
 ## 最初に
 最初に「GCP Key」を設定してください、「Cloud Translation API」が割り当てられたキーが必要になります。
 また要約や辞書は別途「Gemini Key」が必要になります。<BR>
-GCP参考： https://qiita.com/yuya13335/items/99d51b554eb4f1681eb7
-Gemini参考： https://qiita.com/IshigiwaKenichiro/items/3da8fb4f3bb2e724fe97
+- GCP参考： https://qiita.com/yuya13335/items/99d51b554eb4f1681eb7
+- Gemini参考： https://qiita.com/IshigiwaKenichiro/items/3da8fb4f3bb2e724fe97
 
 英語ベースで日本語翻訳を見ながら編集をする事を目的としました
 - データはブラウザストレージに保存しています、PCやブラウザやアカウントを変えると見えません
@@ -32,8 +32,8 @@ Gemini参考： https://qiita.com/IshigiwaKenichiro/items/3da8fb4f3bb2e724fe97
 - 設定画面を開きます
 
 ## 翻訳
-- ここで編集します、英語→日本語 方向が基本
-- 英→日→英とかやってると違う英語になるので英→日の一方通行です、英←日はコピペしてください
+- ここで編集します、英語→日本語 方向が基本です
+- 英→日→英とかやってると「違う英語」になるので英→日の一方通行です、英←日はコピペしてください
 - 該当行をマーキングしています、たまにずれます
 - &lt;BR&gt; :「文末[.。]スペース」に改行を追加します */\. /g, ".\n"*
 - Summary：AIで内容を集約します
