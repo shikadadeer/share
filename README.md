@@ -3,7 +3,8 @@
 ## 最初に
 最初に「GCP Key」を設定してください、「Cloud Translation API」が割り当てられたキーが必要になります。
 また要約や辞書は別途「Gemini Key」が必要になります。<BR>
-**参考URLはあとで探す**
+GCP参考： https://qiita.com/yuya13335/items/99d51b554eb4f1681eb7
+Gemini参考： https://qiita.com/IshigiwaKenichiro/items/3da8fb4f3bb2e724fe97
 
 英語ベースで日本語翻訳を見ながら編集をする事を目的としました
 - データはブラウザストレージに保存しています、PCやブラウザやアカウントを変えると見えません
