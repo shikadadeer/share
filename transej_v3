@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>Translation Notepad v8.0</title>
+    <title>Translation Notepad v8.9.2</title>
     <style>
         :root { 
             --primary: #007aff; --bg: #f5f5f7; --border: #d2d2d7; 
@@ -35,10 +35,24 @@
         .pane { flex: 1; display: flex; flex-direction: column; gap: 6px; position: relative; }
         .pane-header { display: flex; justify-content: space-between; align-items: center; }
         .editor-container { position: relative; flex: 1; border: 1px solid var(--border); border-radius: 8px; background: #fff; overflow: hidden; }
-        .backdrop { position: absolute; top: 0; left: 0; right: 0; bottom: 0; padding: 12px; pointer-events: none; white-space: pre-wrap; word-wrap: break-word; color: transparent; font-size: 14px; line-height: 1.6; font-family: inherit; overflow: hidden; }
+        
+        /* ずれ修正の核心箇所 */
+        .backdrop { 
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0; 
+            padding: 12px; pointer-events: none; white-space: pre-wrap; word-wrap: break-word; 
+            color: transparent; font-size: 14px; 
+            line-height: 1.5; font-family: monospace; 
+            overflow-y: scroll; scrollbar-color: transparent transparent; scrollbar-gutter: stable; 
+            box-sizing: border-box;
+        }
         .highlight-line { background-color: var(--highlight); border-radius: 2px; }
 
-        textarea.main-editor { position: absolute; top: 0; left: 0; width: 100%; height: 100%; padding: 12px; border: none; background: transparent; resize: none; font-size: 14px; line-height: 1.6; outline: none; box-sizing: border-box; font-family: inherit; overflow-y: scroll; }
+        textarea.main-editor { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            padding: 12px; border: none; background: transparent; resize: none; 
+            font-size: 14px; line-height: 1.5; font-family: monospace; 
+            outline: none; box-sizing: border-box; overflow-y: scroll; scrollbar-gutter: stable; 
+        }
 
         .sub-translator { background: #f0f0f3; border: 1px solid var(--border); border-radius: 8px; padding: 8px; flex-shrink: 0; }
         .sub-panes { display: flex; gap: 8px; align-items: center; justify-content: center; height: 80px; }
@@ -48,10 +62,7 @@
         button.sec { background: var(--secondary); }
         button.ai { background: var(--ai-color); }
         button.mini { padding: 0 8px; height: 24px; font-size: 10px; border-radius: 4px; }
-        
-        .sub-panes button.mini { background-color: #50C878; }
 
-        .section-label { font-size: 11px; font-weight: bold; color: #666; flex-shrink: 0; }
         .hist-item { padding: 6px 8px; border-bottom: 1px solid #f0f0f0; cursor: pointer; font-size: 11px; line-height: 1.4; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .hist-item:hover { background: #eee; }
         .hist-meta { font-weight: bold; color: var(--primary); margin-right: 6px; font-size: 10px; }
@@ -65,17 +76,17 @@
         <input type="text" id="docTitle" class="title-input" placeholder="Document Title..." onchange="renameDoc()">
         <div class="sidebar-content">
             <div class="section">
-                <div class="section-label" style="margin-bottom:4px;">DOC MANAGEMENT</div>
+                <div class="section-label" style="margin-bottom:4px; font-size: 11px; font-weight: bold; color: #666;">DOC MANAGEMENT</div>
                 <select id="docSelector" size="8" onchange="switchDoc()" style="width:100%; border:1px solid var(--border); border-radius:6px; padding:4px; font-size:12px;"></select>
                 <button onclick="createNewDoc()" class="sec" style="margin-top:4px; width:100%;">+ 新規作成</button>
             </div>
             <div class="section">
-                <div class="section-label" style="margin-bottom:4px;">REFERENCE URL</div>
+                <div class="section-label" style="margin-bottom:4px; font-size: 11px; font-weight: bold; color: #666;">REFERENCE URL</div>
                 <div style="display:flex; gap:4px; height:24px;">
                     <input type="text" id="noteUrl" style="flex:1; font-size:11px; border:1px solid var(--border); border-radius:4px; padding:0 6px;" placeholder="https://..." oninput="updateCurrentDocUrl()">
                     <button onclick="openNoteUrl()" class="mini sec">Open</button>
                 </div>
-                <div class="section-label" style="margin-top:10px; margin-bottom:4px;">HISTORY</div>
+                <div class="section-label" style="margin-top:10px; margin-bottom:4px; font-size: 11px; font-weight: bold; color: #666;">HISTORY</div>
                 <ul id="historyList" style="list-style:none; padding:0; margin:0;"></ul>
             </div>
         </div>
@@ -83,10 +94,7 @@
         <div class="api-footer">
             <div class="api-line">
                 <div class="api-info-row">
-                    <div class="api-label-group">
-                        <span class="section-label">GCP Key</span>
-                        <span id="gcpModelDisplay" class="api-model-badge"></span>
-                    </div>
+                    <div class="api-label-group"><span class="section-label" style="font-size:11px; font-weight:bold;">GCP Key</span><span id="gcpModelDisplay" class="api-model-badge"></span></div>
                     <a href="https://console.cloud.google.com/apis/credentials" target="_blank" class="api-link">GCP KEY🔗</a>
                 </div>
                 <div class="api-input-group">
@@ -96,10 +104,7 @@
             </div>
             <div class="api-line">
                 <div class="api-info-row">
-                    <div class="api-label-group">
-                        <span class="section-label">Gemini Key</span>
-                        <span id="geminiModelDisplay" class="api-model-badge"></span>
-                    </div>
+                    <div class="api-label-group"><span class="section-label" style="font-size:11px; font-weight:bold;">Gemini Key</span><span id="geminiModelDisplay" class="api-model-badge"></span></div>
                     <a href="https://aistudio.google.com/app/apikey" target="_blank" class="api-link">Gemini KEY🔗</a>
                 </div>
                 <div class="api-input-group">
@@ -113,57 +118,33 @@
     <div class="editor-area">
         <div class="action-bar">
             <div class="tool-box">
-                <input type="text" id="dictInput" class="tool-input" style="width: 180px;" 
-                       placeholder="AI Dictionary Search..." 
-                       onkeydown="if(event.keyCode==13) runAiDict()">
+                <input type="text" id="dictInput" class="tool-input" style="width: 180px;" placeholder="AI Dictionary Search..." onkeydown="if(event.keyCode==13) runAiDict()">
                 <button onclick="runAiDict()" class="ai mini" style="height: 28px;">AI Dict</button>
             </div>
             <button onclick="saveManual()" class="sec">Save</button>
-            <button onclick="window.open('./cpanel.html', '_blank')" class="sec" style="width:36px; padding:0;" title="Settings">⚙</button>
-            <button onclick="window.open('./README.md', '_blank')" class="sec" style="width:36px; padding:0;" title="Help">？</button>
+            <button onclick="window.open('./cpanel.html', '_blank')" class="sec" style="width:36px; padding:0;">⚙</button>
         </div>
 
         <div class="panes">
             <div class="pane">
-                <div class="pane-header">
-                    <div class="section-label">English</div>
-                    <div style="display:flex; gap:4px;">
-                        <button onclick="formatEnBreaks()" class="sec mini">&lt;BR&gt;</button>
-                        <button onclick="runAiSummary('en')" class="ai mini">AI Summary</button>
-                    </div>
-                </div>
-                <div class="editor-container">
-                    <div id="enBackdrop" class="backdrop"></div>
-                    <textarea id="enInput" class="main-editor" oninput="syncEditor()" onscroll="syncScroll('en')" onclick="syncEditor()"></textarea>
-                </div>
+                <div class="pane-header"><div class="section-label" style="font-size: 11px; font-weight: bold; color: #666;">English</div><div style="display:flex; gap:4px;"><button onclick="formatEnBreaks()" class="sec mini">&lt;BR&gt;</button><button onclick="runAiSummary('en')" class="ai mini">AI Summary</button></div></div>
+                <div class="editor-container"><div id="enBackdrop" class="backdrop"></div><textarea id="enInput" class="main-editor" oninput="syncEditor()" onscroll="syncScroll('en')" onclick="syncEditor()"></textarea></div>
             </div>
             <div style="display:flex; flex-direction:column; justify-content:center; gap:12px">
                 <button onclick="translateAction('en', 'ja')" style="width:44px; height:44px; background-color: #50C878;">➡</button>
                 <button onclick="translateAction('ja', 'en')" style="width:44px; height:44px; background-color: #50C878;">⬅</button>
             </div>
             <div class="pane">
-                <div class="pane-header">
-                    <div class="section-label">Japanese</div>
-                    <div style="display:flex; gap:4px;">
-                        <button onclick="formatJaBreaks()" class="sec mini">&lt;BR&gt;</button>
-                        <button onclick="runAiSummary('ja')" class="ai mini">AI Summary</button>
-                    </div>
-                </div>
-                <div class="editor-container">
-                    <div id="jaBackdrop" class="backdrop"></div>
-                    <textarea id="jaOutput" class="main-editor" oninput="syncEditor()" onscroll="syncScroll('ja')" onclick="syncEditor()"></textarea>
-                </div>
+                <div class="pane-header"><div class="section-label" style="font-size: 11px; font-weight: bold; color: #666;">Japanese</div><div style="display:flex; gap:4px;"><button onclick="formatJaBreaks()" class="sec mini">&lt;BR&gt;</button><button onclick="runAiSummary('ja')" class="ai mini">AI Summary</button></div></div>
+                <div class="editor-container"><div id="jaBackdrop" class="backdrop"></div><textarea id="jaOutput" class="main-editor" oninput="syncEditor()" onscroll="syncScroll('ja')" onclick="syncEditor()"></textarea></div>
             </div>
         </div>
 
-        <div class="section-label" style="margin-bottom:4px;">SUB TRANSLATOR</div>
+        <div class="section-label" style="font-size: 11px; font-weight: bold; color: #666; margin-bottom:4px;">SUB TRANSLATOR</div>
         <div class="sub-translator">
             <div class="sub-panes">
                 <textarea id="subEn" class="sub-textarea" placeholder="English..."></textarea>
-                <div style="display:flex; flex-direction:column; gap:4px;">
-                    <button onclick="translateSub('subEn', 'subJa', 'ja')" class="mini">➡</button>
-                    <button onclick="translateSub('subJa', 'subEn', 'en')" class="mini">⬅</button>
-                </div>
+                <div style="display:flex; flex-direction:column; gap:4px;"><button onclick="translateSub('subEn', 'subJa', 'ja')" class="mini">➡</button><button onclick="translateSub('subJa', 'subEn', 'en')" class="mini">⬅</button></div>
                 <textarea id="subJa" class="sub-textarea" placeholder="日本語..."></textarea>
             </div>
         </div>
@@ -173,7 +154,6 @@
 <script>
     const GEMINI_MODEL = "gemini-2.5-flash-lite"; 
     const GCP_MODEL = "base";
-
     const DOCS_KEY = 'trans_memo_universal_docs';
     const SETTINGS_KEY = 'trans_memo_universal_settings';
     
@@ -202,7 +182,7 @@
         const key = document.getElementById('geminiKey').value.trim();
         if(!key) return alert("Gemini API Keyが必要です。");
         const win = window.open("", "_blank", "width=700,height=800");
-        win.document.write("<html><body>AI解析中... (Model: " + GEMINI_MODEL + ")</body></html>");
+        win.document.write("<html><body>AI分析中...</body></html>");
         
         try {
             const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${key}`, {
@@ -211,24 +191,70 @@
             });
             const data = await res.json();
             if (data.candidates && data.candidates[0].content) {
-                const text = data.candidates[0].content.parts[0].text;
-                const htmlBody = text.replace(/\n/g, '<br>').replace(/### (.*)/g, '<h3 style="color:#5856d6;border-bottom:1px solid #eee;">$1</h3>').replace(/## (.*)/g, '<h2 style="color:#1d1d1f;border-left:4px solid #5856d6;padding-left:10px;">$1</h2>').replace(/\*\* (.*?) \*\*/g, '<b>$1</b>');
-                win.document.body.innerHTML = `<style>body{font-family:sans-serif;line-height:1.7;padding:30px;color:#1d1d1f;}</style><h2>${title}</h2><hr>${htmlBody}`;
+                let text = data.candidates[0].content.parts[0].text;
+                let htmlBody = text
+                    .replace(/^(?:#+\s*|\d+\.\s+)+(.*)/gm, '<h2 style="color:#1d1d1f; border-left:4px solid #5856d6; padding-left:10px; margin-top:20px; border-bottom:1px solid #eee; font-size:1.1em;">$1</h2>')
+                    .replace(/\n/g, '<br>\n')
+                    .replace(/\*\* (.*?) \*\*/g, '<b>$1</b>')
+                    .replace(/\*(.*?)\*/g, '<i>$1</i>');
+
+                win.document.body.innerHTML = `
+                    <style>
+                        body { font-family: -apple-system, sans-serif; line-height: 1.7; padding: 30px; color: #1d1d1f; background: #f9f9fb; }
+                        h2 { margin-bottom: 10px; }
+                        b { color: #007aff; }
+                        hr { border: 0; border-top: 1px solid #d2d2d7; margin: 20px 0; }
+                    </style>
+                    <div style="font-size: 0.9em; color: #636366;">AI Analysis Report</div>
+                    <h1 style="font-size: 1.4em; margin-top: 5px;">${title}</h1>
+                    <hr>
+                    ${htmlBody}
+                `;
             } else { throw new Error(data.error?.message || "Invalid Response"); }
         } catch (e) { win.document.body.innerHTML = `<p style="color:red">Error: ${e.message}</p>`; }
     }
 
     function runAiSummary(lang) {
-        const text = document.getElementById(lang==='en'?'enInput':'jaOutput').value;
-        if(!text) return;
-        const prompt = `以下のテキストを詳細に分析し、構造的に要約してください。言語は ${lang==='en'?'English':'日本語'} で出力してください。\n\n【要件】\n1. 全体のメインテーマを1行で\n2. 重要なポイントを箇条書きで（3〜5点）\n3. 特筆すべきキーワードがあれば抽出\n\n内容：\n${text}`;
-        executeGemini(prompt, "AI構造化要約");
+        const text = document.getElementById(lang === 'en' ? 'enInput' : 'jaOutput').value;
+        if (!text) return;
+        const prompt = `以下のテキストを構造的に分析し、指定のフォーマットでサマリーを作成してください。
+
+## 1. タイトル生成と長さ別要約 (Title & Variations)
+- 適切なタイトルを生成。
+- 以下の3つの長さで、それぞれ【英語：日本語】のペアで出力。
+  - 小 (Short): 一言（単語や短いフレーズ）
+  - 中 (Medium): 数文程度の解説
+  - 長 (Long): 核心を突く「一行」の凝縮された要約
+
+## 2. 内容の要約 (Detailed Summary)
+- テキストの主要な論点や背景を、日本語で詳しく要約してください。
+
+## 3. ツリー構造 (Information Tree)
+- テキストの情報の階層を、Markdownのリスト形式（- や   -）を用いてツリー構造で表記してください。
+
+内容：
+${text}`;
+        executeGemini(prompt, "AI高度構造化サマリー");
     }
 
     function runAiDict() {
         const word = document.getElementById('dictInput').value;
         if(!word) return;
-        const prompt = `単語/フレーズ「${word}」について、以下の項目で詳しく解説してください。\n\n1. 基本的な意味と訳語\n2. 語源や由来（理解を助ける背景）\n3. 類義語とのニュアンスの違い（使い分け）\n4. 自然な例文（英語＋日本語）を3つ\n5. その表現が使われる主な状況\n\n日本語で丁寧にお願いします。`;
+        const prompt = `英単語/フレーズ「${word}」について、以下の4つの構成で簡潔に解説してください。
+
+## 1. 英語：日本語
+   - 代表的な訳語。
+
+## 2. 類語（複数） 英語：日本語
+   - 関連語と訳を提示。
+
+## 3. 意味を日本語で説明
+   - ニュアンスを含めた日本語解説。
+
+## 4. 用例 英語：日本語
+   - 実践的な例文3つ。
+
+回答はMarkdown形式を使用し、余計な前置きをせずに出力してください。`;
         executeGemini(prompt, `AI辞書詳細解説: ${word}`);
     }
 
@@ -237,10 +263,9 @@
         el.value = el.value.replace(/\. /g, ".\n");
         saveHistory('Format'); syncEditor();
     }
-
     function formatJaBreaks() {
         const el = document.getElementById('jaOutput');
-        el.value = el.value.replace(/。 /g, "。\n");
+        el.value = el.value.replace(/。/g, "。\n");
         saveHistory('Format'); syncEditor();
     }
 
@@ -256,7 +281,7 @@
             const data = await res.json();
             let result = new DOMParser().parseFromString(data.data.translations[0].translatedText, 'text/html').documentElement.textContent;
             if(src==='en') { document.getElementById('jaOutput').value = result.replace(/。/g, "。\n"); saveHistory('Translate'); syncEditor(); }
-            else { window.open("").document.write(`<pre style="padding:20px; white-space:pre-wrap; line-height:1.6;">${result}</pre>`); }
+            else { window.open("").document.write(`<pre style="padding:20px; white-space:pre-wrap; line-height:1.6; font-family:monospace;">${result}</pre>`); }
         } catch (e) { alert(e.message); }
     }
 
@@ -301,12 +326,7 @@
         list.innerHTML = '';
         (allDocs[currentTitle].history || []).slice().reverse().slice(0, 20).forEach(item => {
             const dateObj = new Date(item.date);
-            const yy = String(dateObj.getFullYear()).slice(-2);
-            const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
-            const hh = String(dateObj.getHours()).padStart(2, '0');
-            const min = String(dateObj.getMinutes()).padStart(2, '0');
-            const dateStr = `${yy}/${mm} ${hh}:${min}`;
-
+            const dateStr = `${String(dateObj.getFullYear()).slice(-2)}/${String(dateObj.getMonth() + 1).padStart(2, '0')} ${String(dateObj.getHours()).padStart(2, '0')}:${String(dateObj.getMinutes()).padStart(2, '0')}`;
             const li = document.createElement('li');
             li.className = 'hist-item';
             li.innerHTML = `<span class="hist-meta">${item.type}</span><span class="hist-date">${dateStr}</span>`;
